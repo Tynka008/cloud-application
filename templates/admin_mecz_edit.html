@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Edytuj mecz</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<nav class="nav-main">
+    <div class="nav-left">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="System Liga" class="nav-logo">
+    </div>
+
+    <div class="nav-right">
+        <a href="{{ url_for('index') }}">Start</a>
+        <a href="{{ url_for('druzyny_list') }}">Drużyny</a>
+        <a href="{{ url_for('zawodnicy_list') }}">Zawodnicy</a>
+        <a href="{{ url_for('mecze_list') }}">Mecze</a>
+        <a href="{{ url_for('strzelcy') }}">Strzelcy</a>
+        <a href="{{ url_for('tabela_ligowa') }}">Tabela</a>
+        <a href="{{ url_for('terminarz') }}">Terminarz</a>
+        {% if not session.get('user_login') %}
+            <a href="{{ url_for('login') }}">Logowanie</a>
+        {% endif %}
+
+        {% if session.get('rola') == 'Trener' %}
+            <a href="{{ url_for('trener_select') }}">Panel trenera</a>
+        {% endif %}
+
+        {% if session.get('rola') == 'Administrator' %}
+            <a class="nav-highlight" href="{{ url_for('admin_panel') }}">Panel admina</a>
+        {% endif %}
+
+        {% if session.get('user_login') %}
+            <a href="{{ url_for('logout') }}">Wyloguj</a>
+        {% endif %}
+    </div>
+</nav>
+
+<div class="container">
+    <a class="btn" href="{{ url_for('admin_mecze') }}">← Zarządzanie meczami</a>
+    <br><br>
+
+    <h2>Edytuj mecz</h2>
+
+    <div class="card">
+        <form method="POST">
+            <label>Gospodarz</label>
+            <select name="gospodarz_id" required>
+                {% for team in teams %}
+                    <option value="{{ team[0] }}" {% if team[0] == mecz[1] %}selected{% endif %}>
+                        {{ team[1] }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <label>Gość</label>
+            <select name="gosc_id" required>
+                {% for team in teams %}
+                    <option value="{{ team[0] }}" {% if team[0] == mecz[2] %}selected{% endif %}>
+                        {{ team[1] }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <label>Data meczu</label>
+            <input type="datetime-local" name="data" value="{{ mecz[5] }}" required>
+
+            <label>Wynik gospodarza</label>
+            <input type="number" name="wynik_g" min="0" value="{{ mecz[3] if mecz[3] is not none else '' }}">
+
+            <label>Wynik gościa</label>
+            <input type="number" name="wynik_gosc" min="0" value="{{ mecz[4] if mecz[4] is not none else '' }}">
+
+            <label>Status meczu</label>
+            <select name="status_meczu" required>
+                <option value="planowany" {% if mecz[6] == "planowany" %}selected{% endif %}>
+                    planowany
+                </option>
+                <option value="w trakcie" {% if mecz[6] == "w trakcie" %}selected{% endif %}>
+                    w trakcie
+                </option>
+                <option value="zakończony" {% if mecz[6] == "zakończony" %}selected{% endif %}>
+                    zakończony
+                </option>
+            </select>
+
+            <label>Terminarz</label>
+            <select name="terminarz_id" required>
+                {% for t in terminarze %}
+                    <option value="{{ t[0] }}" {% if t[0] == mecz[7] %}selected{% endif %}>
+                        {{ t[1] }} — {{ t[2] }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <br><br>
+
+            <button class="btn" type="submit">Zapisz zmiany</button>
+        </form>
+    </div>
+
+</div>
+
+</body>
+</html>

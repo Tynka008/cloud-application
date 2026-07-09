@@ -10,7 +10,7 @@
 
 <nav class="nav-main">
     <div class="nav-left">
-        <span class="logo">LIGA</span>
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="System Liga" class="nav-logo">
     </div>
 
     <div class="nav-right">
@@ -21,13 +21,12 @@
         <a href="{{ url_for('strzelcy') }}">Strzelcy</a>
         <a href="{{ url_for('tabela_ligowa') }}">Tabela</a>
         <a href="{{ url_for('terminarz') }}">Terminarz</a>
-
         {% if not session.get('user_login') %}
             <a href="{{ url_for('login') }}">Logowanie</a>
         {% endif %}
 
-        {% if session.get('rola') in ['Trener'] %}
-            <a class="nav-highlight" href="{{ url_for('trener_select') }}">Panel trenera</a>
+        {% if session.get('rola') == 'Trener' %}
+            <a href="{{ url_for('trener_select') }}">Panel trenera</a>
         {% endif %}
 
         {% if session.get('rola') == 'Administrator' %}
@@ -41,43 +40,60 @@
 </nav>
 
 <div class="container">
+    <a class="btn" href="{{ url_for('admin_panel') }}">← Panel admina</a>
+    <br><br>
 
     <h2>Zarządzanie meczami</h2>
 
-    <!-- FORMULARZ DODAWANIA MECZU -->
     <div class="card">
         <h3>Dodaj mecz</h3>
 
         <form method="POST">
-
-            <label>Gospodarz:</label>
+            <label>Gospodarz</label>
             <select name="gospodarz_id" required>
-                {% for t in teams %}
-                <option value="{{ t[0] }}">{{ t[1] }}</option>
+                {% for team in teams %}
+                    <option value="{{ team[0] }}">{{ team[1] }}</option>
                 {% endfor %}
             </select>
 
-            <label>Gość:</label>
+            <label>Gość</label>
             <select name="gosc_id" required>
-                {% for t in teams %}
-                <option value="{{ t[0] }}">{{ t[1] }}</option>
+                {% for team in teams %}
+                    <option value="{{ team[0] }}">{{ team[1] }}</option>
                 {% endfor %}
             </select>
 
-            <label>Data (YYYY-MM-DD HH:MM:SS):</label>
-            <input type="text" name="data" required>
+            <label>Data meczu</label>
+            <input type="datetime-local" name="data" required>
 
-            <label>Wynik gospodarzy:</label>
-            <input type="number" name="wynik_g">
+            <label>Wynik gospodarza</label>
+            <input type="number" name="wynik_g" min="0">
 
-            <label>Wynik gości:</label>
-            <input type="number" name="wynik_gosc">
+            <label>Wynik gościa</label>
+            <input type="number" name="wynik_gosc" min="0">
+
+            <label>Status meczu</label>
+            <select name="status_meczu" required>
+                <option value="planowany">planowany</option>
+                <option value="w trakcie">w trakcie</option>
+                <option value="zakończony" selected>zakończony</option>
+            </select>
+
+            <label>Terminarz</label>
+            <select name="terminarz_id" required>
+                {% for t in terminarze %}
+                    <option value="{{ t[0] }}">
+                        {{ t[1] }} — {{ t[2] }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <br><br>
 
             <button class="btn" type="submit">Dodaj mecz</button>
         </form>
     </div>
 
-    <!-- LISTA MECZÓW -->
     <div class="card">
         <h3>Lista meczów</h3>
 
@@ -87,8 +103,10 @@
                     <th>ID</th>
                     <th>Data</th>
                     <th>Gospodarz</th>
-                    <th>Wynik</th>
                     <th>Gość</th>
+                    <th>Wynik</th>
+                    <th>Status</th>
+                    <th>Terminarz</th>
                     <th>Akcje</th>
                 </tr>
             </thead>
@@ -96,18 +114,34 @@
             <tbody>
                 {% for m in matches %}
                 <tr>
-                    <td>{{ m[0] }}</td>
+                    <td>{{ loop.index }}</td>
                     <td>{{ m[1] }}</td>
                     <td>{{ m[2] }}</td>
-                    <td><b>{{ m[4] }} : {{ m[5] }}</b></td>
                     <td>{{ m[3] }}</td>
                     <td>
-                        <a class="btn-danger btn" href="{{ url_for('admin_mecz_delete', mecz_id=m[0]) }}">Usuń</a>
+                        {% if m[4] is not none and m[5] is not none %}
+                            {{ m[4] }} : {{ m[5] }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>{{ m[6] }}</td>
+                    <td>{{ m[7] }}</td>
+                    <td>
+                        <a class="btn" href="{{ url_for('admin_mecz_edit', mecz_id=m[0]) }}">
+                            Edytuj
+                        </a>
+
+                        <a class="btn-warning btn"
+                           href="{{ url_for('admin_mecz_delete', mecz_id=m[0]) }}"
+                           onclick="return confirm('Czy na pewno chcesz usunąć ten mecz?')">
+                            Usuń
+                        </a>
                     </td>
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="6">Brak meczów w systemie.</td>
+                    <td colspan="8">Brak meczów.</td>
                 </tr>
                 {% endfor %}
             </tbody>

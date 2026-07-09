@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Admin – Drużyny</title>
+    <title>Admin – Terminarze</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
@@ -43,54 +43,79 @@
     <a class="btn" href="{{ url_for('admin_panel') }}">← Panel admina</a>
     <br><br>
 
-    <h2>Zarządzanie drużynami</h2>
+    <h2>Zarządzanie terminarzami rozgrywek</h2>
 
     <div class="card">
-        <h3>Dodaj drużynę</h3>
+        <h3>Dodaj terminarz / sezon</h3>
 
         <form method="POST">
-            <label>Nazwa drużyny:</label>
-            <input type="text" name="nazwa" required>
+            <label>Nazwa sezonu</label>
+            <input type="text" name="nazwa_sezonu" placeholder="np. Sezon 2025/2026" required>
 
-            <label>Miasto:</label>
-            <input type="text" name="miasto" required>
+            <label>Data rozpoczęcia</label>
+            <input type="date" name="data_rozpoczecia" required>
 
-            <label>Punkty:</label>
-            <input type="number" name="punkty" value="0">
+            <label>Data zakończenia</label>
+            <input type="date" name="data_zakonczenia" required>
 
-            <button class="btn" type="submit">Dodaj</button>
+            <label>Status</label>
+            <select name="status" required>
+                <option value="planowany">planowany</option>
+                <option value="aktywny">aktywny</option>
+                <option value="zakończony">zakończony</option>
+            </select>
+
+            <br><br>
+            <button class="btn" type="submit">Dodaj terminarz</button>
         </form>
     </div>
 
     <div class="card">
-        <h3>Lista drużyn</h3>
+        <h3>Lista terminarzy</h3>
 
         <table>
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Nazwa</th>
-                    <th>Miasto</th>
-                    <th>Punkty</th>
+                    <th>Nazwa sezonu</th>
+                    <th>Data rozpoczęcia</th>
+                    <th>Data zakończenia</th>
+                    <th>Status</th>
+                    <th>Czy zakończony?</th>
                     <th>Akcje</th>
                 </tr>
             </thead>
 
             <tbody>
-                {% for t in teams %}
+                {% for t in terminarze %}
                 <tr>
                     <td>{{ t[0] }}</td>
                     <td>{{ t[1] }}</td>
                     <td>{{ t[2] }}</td>
-                    <td><b>{{ t[3] }}</b></td>
+                    <td>{{ t[3] }}</td>
+                    <td><b>{{ t[4] }}</b></td>
                     <td>
-                        <a class="btn" href="{{ url_for('admin_druzyna_edit', team_id=t[0]) }}">Edytuj</a>
-                        <a class="btn-danger btn" href="{{ url_for('admin_druzyna_delete', team_id=t[0]) }}">Usuń</a>
+                        {% if t[5] == 1 %}
+                            Tak
+                        {% else %}
+                            Nie
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a class="btn" href="{{ url_for('admin_terminarz_edit', terminarz_id=t[0]) }}">
+                            Edytuj
+                        </a>
+
+                        <a class="btn-warning btn"
+                           href="{{ url_for('admin_terminarz_delete', terminarz_id=t[0]) }}"
+                           onclick="return confirm('Czy na pewno chcesz usunąć ten terminarz?')">
+                            Usuń
+                        </a>
                     </td>
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="5">Brak drużyn w systemie.</td>
+                    <td colspan="7">Brak terminarzy.</td>
                 </tr>
                 {% endfor %}
             </tbody>

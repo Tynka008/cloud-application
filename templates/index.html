@@ -15,7 +15,6 @@
 </script>
 <body>
 
-<!-- NAVBAR -->
 <nav class="nav-main">
     <div class="nav-left">
         <img src="{{ url_for('static', filename='logo.png') }}" alt="System Liga" class="nav-logo">
@@ -47,19 +46,14 @@
     </div>
 </nav>
 
-
 <!-- HERO BANNER -->
 <div class="hero-banner">
     <img src="{{ url_for('static', filename='banner.gif') }}" alt="System Liga Banner" class="hero-gif">
 </div>
 
 
-<div class="container">
+<div class="grid-2">
 
-    <!-- TOP SECTION: NEXT MATCH + LAST MATCH -->
-    <div class="grid-2">
-
-        <!-- NEXT MATCH -->
         <div class="card">
             <h3>Następny mecz</h3>
 
@@ -68,43 +62,38 @@
                 <p><b>Status:</b> {{ data.season[1] }}</p>
             {% endif %}
 
-            {% if data.matches %}
-                {% set next_match = data.matches[0] %}
-                <div class="match-box">
-                    <p><b>{{ next_match[1] }}</b> vs <b>{{ next_match[2] }}</b></p>
-                    <p>{{ next_match[0] }}</p>
-                </div>
+            {% if data.next_match %}
+                    <p><b>{{ data.next_match[1] }}</b> vs <b>{{ data.next_match[2] }}</b></p>
+                    <p>{{ data.next_match[0] }}</p>
             {% else %}
-                <p>Brak zaplanowanych meczów.</p>
+                <p>Brak zaplanowanych meczów w systemie.</p>
             {% endif %}
         </div>
 
-        <!-- LAST MATCH -->
         <div class="card">
             <h3>Ostatni mecz</h3>
 
-            {% if data.matches %}
-                {% set last_match = data.matches[-1] %}
-                <div class="match-box">
-                    <p><b>{{ last_match[1] }}</b> {{ last_match[3] }} : {{ last_match[4] }} <b>{{ last_match[2] }}</b></p>
-                    <p>{{ last_match[0] }}</p>
-                </div>
+            {% if data.last_match %}
+                    <p><b>{{ data.last_match[1] }}</b> 
+                        {% if data.last_match[3] is not none %}{{ data.last_match[3] }}{% else %}-{% endif %} : 
+                        {% if data.last_match[4] is not none %}{{ data.last_match[4] }}{% else %}-{% endif %} 
+                    <b>{{ data.last_match[2] }}</b></p>
+                    <p>{{ data.last_match[0] }}</p>
             {% else %}
-                <p>Brak rozegranych meczów.</p>
+                <p>Brak rozegranych meczów w systemie.</p>
             {% endif %}
         </div>
 
     </div>
 
 
-    <!-- BEST PLAYER + LEADER -->
     <div class="grid-2" style="margin-top: 25px;">
 
         <div class="card">
             <h3>Lider rozgrywek</h3>
             {% if data.team %}
-                <p><b>{{ data.team[0] }}</b></p>
-                <p>Punkty: <b>{{ data.team[1] }}</b></p>
+                <p><b>{{ data.team.nazwa }}</b></p>
+                <p>Punkty: <b>{{ data.team.punkty }}</b></p>
             {% else %}
                 <p>Brak danych.</p>
             {% endif %}
@@ -123,8 +112,6 @@
 
     </div>
 
-
-    <!-- NEWS SECTION (LAST MATCHES) -->
     <div class="card" style="margin-top: 30px;">
         <h3>Ostatnie mecze</h3>
 
@@ -138,12 +125,19 @@
                 </tr>
             </thead>
             <tbody>
-                {% for m in data.matches[:10] %}
+                {% for m in data.recent_matches %}
                 <tr>
                     <td>{{ m[0] }}</td>
                     <td>{{ m[1] }}</td>
-                    <td><b>{{ m[3] }} : {{ m[4] }}</b></td>
+                    <td><b>
+                        {% if m[3] is not none %}{{ m[3] }}{% else %}-{% endif %} : 
+                        {% if m[4] is not none %}{{ m[4] }}{% else %}-{% endif %}
+                    </b></td>
                     <td>{{ m[2] }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td>Brak meczów do wyświetlenia.</td>
                 </tr>
                 {% endfor %}
             </tbody>

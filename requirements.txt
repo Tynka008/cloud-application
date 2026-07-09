@@ -1,3 +1,5 @@
 flask
 pyodbc
 cryptography
+pytest
+pytest-mock

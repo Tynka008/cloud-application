@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Raport spójności – Admin</title>
+    <title>Raport spójności</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
@@ -10,24 +10,23 @@
 
 <nav class="nav-main">
     <div class="nav-left">
-        <span class="logo">LIGA</span>
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="System Liga" class="nav-logo">
     </div>
 
     <div class="nav-right">
-         <a href="{{ url_for('index') }}">Start</a>
+        <a href="{{ url_for('index') }}">Start</a>
         <a href="{{ url_for('druzyny_list') }}">Drużyny</a>
         <a href="{{ url_for('zawodnicy_list') }}">Zawodnicy</a>
         <a href="{{ url_for('mecze_list') }}">Mecze</a>
         <a href="{{ url_for('strzelcy') }}">Strzelcy</a>
         <a href="{{ url_for('tabela_ligowa') }}">Tabela</a>
         <a href="{{ url_for('terminarz') }}">Terminarz</a>
-
         {% if not session.get('user_login') %}
             <a href="{{ url_for('login') }}">Logowanie</a>
         {% endif %}
 
-        {% if session.get('rola') in ['Trener'] %}
-            <a class="nav-highlight" href="{{ url_for('trener_select') }}">Panel trenera</a>
+        {% if session.get('rola') == 'Trener' %}
+            <a href="{{ url_for('trener_select') }}">Panel trenera</a>
         {% endif %}
 
         {% if session.get('rola') == 'Administrator' %}
@@ -41,8 +40,10 @@
 </nav>
 
 <div class="container">
+    <a class="btn" href="{{ url_for('admin_panel') }}">← Panel admina</a>
+    <br><br>
 
-    <h2>Raport spójności wyników</h2>
+    <h2>Raport spójności wyników i goli</h2>
 
     <div class="card">
         <table>
@@ -52,28 +53,36 @@
                     <th>Data</th>
                     <th>Gospodarz</th>
                     <th>Gość</th>
-                    <th>Wynik</th>
-                    <th>Liczba goli</th>
-                    <th>Spójność</th>
+                    <th>Wynik gospodarza</th>
+                    <th>Wynik gościa</th>
+                    <th>Gole gospodarza w zdarzeniach</th>
+                    <th>Gole gościa w zdarzeniach</th>
+                    <th>Zgodność</th>
                 </tr>
             </thead>
 
             <tbody>
                 {% for r in raport %}
-                <tr class="{{ 'ok' if r[7] else 'bad' }}">
-                    <td>{{ r[0] }}</td>
+                <tr>
+                    <td>{{ loop.index }}</td>
                     <td>{{ r[1] }}</td>
                     <td>{{ r[2] }}</td>
                     <td>{{ r[3] }}</td>
-                    <td><b>{{ r[4] }} : {{ r[5] }}</b></td>
+                    <td>{{ r[4] }}</td>
+                    <td>{{ r[5] }}</td>
                     <td>{{ r[6] }}</td>
+                    <td>{{ r[7] }}</td>
                     <td>
-                        {% if r[7] %}
-                            <span style="color:green; font-weight:700;">OK</span>
+                        {% if r[8] %}
+                             zgodny
                         {% else %}
-                            <span style="color:red; font-weight:700;">NIESPÓJNE</span>
+                             niezgodny
                         {% endif %}
                     </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="9">Brak meczów do sprawdzenia.</td>
                 </tr>
                 {% endfor %}
             </tbody>

@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Tabela ligowa – System Liga</title>
+    <title>Tabela ligowa</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
@@ -10,7 +10,7 @@
 
 <nav class="nav-main">
     <div class="nav-left">
-        <span class="logo">LIGA</span>
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="System Liga" class="nav-logo">
     </div>
 
     <div class="nav-right">
@@ -19,14 +19,13 @@
         <a href="{{ url_for('zawodnicy_list') }}">Zawodnicy</a>
         <a href="{{ url_for('mecze_list') }}">Mecze</a>
         <a href="{{ url_for('strzelcy') }}">Strzelcy</a>
-        <a class="nav-highlight"href="{{ url_for('tabela_ligowa') }}">Tabela</a>
+        <a class="nav-highlight" href="{{ url_for('tabela_ligowa') }}">Tabela</a>
         <a href="{{ url_for('terminarz') }}">Terminarz</a>
-
         {% if not session.get('user_login') %}
             <a href="{{ url_for('login') }}">Logowanie</a>
         {% endif %}
 
-        {% if session.get('rola') in ['Trener'] %}
+        {% if session.get('rola') == 'Trener' %}
             <a href="{{ url_for('trener_select') }}">Panel trenera</a>
         {% endif %}
 
@@ -41,6 +40,8 @@
 </nav>
 
 <div class="container">
+    <a class="btn" href="{{ url_for('index') }}">← Strona główna</a>
+    <br><br>
 
     <h2>Tabela ligowa</h2>
 
@@ -48,20 +49,30 @@
         <table>
             <thead>
                 <tr>
-                    <th>Pozycja</th>
+                    <th>Miejsce</th>
                     <th>Drużyna</th>
                     <th>Miasto</th>
                     <th>Punkty</th>
+                    <th>Gole strzelone</th>
+                    <th>Gole stracone</th>
+                    <th>Bilans</th>
                 </tr>
             </thead>
 
             <tbody>
-                {% for r in rows %}
+                {% for row in rows %}
                 <tr>
                     <td>{{ loop.index }}</td>
-                    <td>{{ r[1] }}</td>
-                    <td>{{ r[2] }}</td>
-                    <td><b>{{ r[3] }}</b></td>
+                    <td>{{ row.nazwa }}</td>
+                    <td>{{ row.miasto }}</td>
+                    <td><b>{{ row.punkty }}</b></td>
+                    <td>{{ row.gole_strzelone }}</td>
+                    <td>{{ row.gole_stracone }}</td>
+                    <td>{{ row.bilans }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7">Brak danych do tabeli.</td>
                 </tr>
                 {% endfor %}
             </tbody>

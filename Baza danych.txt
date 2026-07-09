@@ -1,0 +1,156 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Druzyna](
+	[DruzynaID] [int] IDENTITY(1,1) NOT NULL,
+	[Nazwa] [varchar](100) NOT NULL,
+	[Miasto] [varchar](100) NULL,
+	[Punkty] [int] NULL
+) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[Druzyna] ADD PRIMARY KEY CLUSTERED 
+(
+	[DruzynaID] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[Druzyna] ADD  DEFAULT ((0)) FOR [Punkty]
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Gol](
+	[GolID] [int] IDENTITY(1,1) NOT NULL,
+	[MeczID] [int] NOT NULL,
+	[ZawodnikID] [int] NOT NULL,
+	[Minuta] [int] NOT NULL,
+	[Typ] [varchar](30) NULL
+) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[Gol] ADD PRIMARY KEY CLUSTERED 
+(
+	[GolID] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[Gol]  WITH CHECK ADD  CONSTRAINT [FK_Gol_Mecz] FOREIGN KEY([MeczID])
+REFERENCES [dbo].[Mecz] ([MeczID])
+GO
+ALTER TABLE [dbo].[Gol] CHECK CONSTRAINT [FK_Gol_Mecz]
+GO
+ALTER TABLE [dbo].[Gol]  WITH CHECK ADD  CONSTRAINT [FK_Gol_Zawodnik] FOREIGN KEY([ZawodnikID])
+REFERENCES [dbo].[Zawodnik] ([ZawodnikID])
+GO
+ALTER TABLE [dbo].[Gol] CHECK CONSTRAINT [FK_Gol_Zawodnik]
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Mecz](
+	[MeczID] [int] IDENTITY(1,1) NOT NULL,
+	[DruzynaGospodarzID] [int] NOT NULL,
+	[DruzynaGoscID] [int] NOT NULL,
+	[WynikGospodarz] [int] NULL,
+	[WynikGosc] [int] NULL,
+	[DataMeczu] [datetime] NOT NULL,
+	[StatusMeczu] [varchar](20) NULL,
+	[TerminarzID] [int] NOT NULL
+) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[Mecz] ADD PRIMARY KEY CLUSTERED 
+(
+	[MeczID] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[Mecz] ADD  DEFAULT ((0)) FOR [WynikGospodarz]
+GO
+ALTER TABLE [dbo].[Mecz] ADD  DEFAULT ((0)) FOR [WynikGosc]
+GO
+ALTER TABLE [dbo].[Mecz]  WITH CHECK ADD  CONSTRAINT [FK_Mecz_Gosc] FOREIGN KEY([DruzynaGoscID])
+REFERENCES [dbo].[Druzyna] ([DruzynaID])
+GO
+ALTER TABLE [dbo].[Mecz] CHECK CONSTRAINT [FK_Mecz_Gosc]
+GO
+ALTER TABLE [dbo].[Mecz]  WITH CHECK ADD  CONSTRAINT [FK_Mecz_Gospodarz] FOREIGN KEY([DruzynaGospodarzID])
+REFERENCES [dbo].[Druzyna] ([DruzynaID])
+GO
+ALTER TABLE [dbo].[Mecz] CHECK CONSTRAINT [FK_Mecz_Gospodarz]
+GO
+ALTER TABLE [dbo].[Mecz]  WITH CHECK ADD  CONSTRAINT [FK_Mecz_Terminarz] FOREIGN KEY([TerminarzID])
+REFERENCES [dbo].[TerminarzRozgrywek] ([TerminarzID])
+GO
+ALTER TABLE [dbo].[Mecz] CHECK CONSTRAINT [FK_Mecz_Terminarz]
+GO
+ALTER TABLE [dbo].[Mecz]  WITH CHECK ADD  CONSTRAINT [CHK_RozneDruzyny] CHECK  (([DruzynaGospodarzID]<>[DruzynaGoscID]))
+GO
+ALTER TABLE [dbo].[Mecz] CHECK CONSTRAINT [CHK_RozneDruzyny]
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[TerminarzRozgrywek](
+	[TerminarzID] [int] IDENTITY(1,1) NOT NULL,
+	[NazwaSezonu] [varchar](100) NOT NULL,
+	[DataRozpoczecia] [date] NOT NULL,
+	[DataZakonczenia] [date] NULL,
+	[Status] [varchar](20) NULL
+) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[TerminarzRozgrywek] ADD PRIMARY KEY CLUSTERED 
+(
+	[TerminarzID] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Uzytkownik](
+	[UzytkownikID] [int] IDENTITY(1,1) NOT NULL,
+	[Login] [varchar](50) NOT NULL,
+	[HasloHash] [varchar](256) NOT NULL,
+	[Rola] [varchar](30) NOT NULL,
+	[Token] [varchar](256) NULL
+) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[Uzytkownik] ADD PRIMARY KEY CLUSTERED 
+(
+	[UzytkownikID] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+ALTER TABLE [dbo].[Uzytkownik] ADD UNIQUE NONCLUSTERED 
+(
+	[Login] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Zawodnik](
+	[ZawodnikID] [int] IDENTITY(1,1) NOT NULL,
+	[Imie] [varchar](50) NOT NULL,
+	[Nazwisko] [varchar](50) NOT NULL,
+	[Pozycja] [varchar](30) NULL,
+	[DruzynaID] [int] NOT NULL
+) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[Zawodnik] ADD PRIMARY KEY CLUSTERED 
+(
+	[ZawodnikID] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[Zawodnik]  WITH CHECK ADD  CONSTRAINT [FK_Zawodnik_Druzyna] FOREIGN KEY([DruzynaID])
+REFERENCES [dbo].[Druzyna] ([DruzynaID])
+GO
+ALTER TABLE [dbo].[Zawodnik] CHECK CONSTRAINT [FK_Zawodnik_Druzyna]
+GO

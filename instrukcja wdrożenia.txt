@@ -1,0 +1,43 @@
+KROK 1. Zamieść pliki aplikacji do repozytorium Github
+
+KROK 2. Zaloguj się do Azure Portal, utwórz App Service w grupie zasobów, wg tych wytycznych:
+- Stos środowiska uruchomieniowego: Python 3.13
+- System operacyjny: Linux
+- Region: Poland Central
+- Wdrozenie - połączenie z Github
+
+KROK 3. Stwórz baze danych sql Azure Database w tej samie grupie zasobów, wg tych wytycznych:
+- Kliknij "+" i wpisz SQL database
+Konfiguracja:
+- Wybierz swoją subskrypcję
+- Wpisz nazwe
+- lokalizacje ustaw na Poland Central i ustaw metodę autoryzacji
+- Ustaw login i hasło (użyj tych samych danych, które wpisałeś w DATABASE_URL)
+- Wybierz opcje free do 32gb
+Gdy baza się utworzy musisz zezwolić aplikacji na połączenie:
+- wejdź w bazę
+- wybierz parametry połaczeń (ODBC) i wklej:
+Driver={ODBC Driver 18 for SQL Server};Server=tcp:serwertestowy.database.windows.net,1433;Database=testowydatabase;Uid=testowy;Pwd={your_password_here};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;
+- W sekcji Firewall rules upewnij się, że zaznaczona jest opcja "Allow Azure services and resources to access this server". Kliknij Zapisz.
+
+KROK 4. W App Service w menu po lewej stronie kliknij Zmienne środowiskowe i kliknij "+". W polu Name wpisz: DATABASE_URL, a w polu Value: 
+Driver={ODBC Driver 18 for SQL Server};Server=tcp:serwertestowy.database.windows.net,1433;Database=testowydatabase;Uid=testowy;Pwd=test123@;Encrypt=yes;TrustServerCertificate=yes;Connection Timeout=30;
+
+KROK 5. Jeśli nie podpiąłeś GitHub, to:
+- wejdź w Centrum wdraania w App Service
+- w sekcji połączenia wybierz GitHub
+- zaloguj się do swojego konta Github
+- wybierz swoją organizację, repozytorium oraz branch
+- zapisz
+
+KROK 6. Wróć do zakładki Konfiguracja, a następnie wybierz Ustawienia stosu. W polu Polecenie uruchamiania wpisz:
+gunicorn --bind=0.0.0.0 --timeout 1200 app:app
+Następnie zapisz
+
+KROK 7. Sprawdź, czy działa poprzez kliknięcie w App Service na link domeny głównej.Jeśli coś nie działa, w menu po lewej stronie wybierz Log stream. Zobaczysz tam "na żywo", co dzieje się wewnątrz serwera i dlaczego aplikacja ewentualnie wyrzuca błąd.
+
+Dane do logowania:
+konto admina - login: test; hasło: admin123
+konto trenera - login: klient; hasło: klient123@
+konto uzytkownika - login: klient1; hasło: klient123 
+baza danych - login: testowy, hasło: test123@

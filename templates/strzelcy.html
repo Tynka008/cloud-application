@@ -10,7 +10,7 @@
 
 <nav class="nav-main">
     <div class="nav-left">
-        <span class="logo">LIGA</span>
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="System Liga" class="nav-logo">
     </div>
 
     <div class="nav-right">
@@ -21,12 +21,11 @@
         <a class="nav-highlight" href="{{ url_for('strzelcy') }}">Strzelcy</a>
         <a href="{{ url_for('tabela_ligowa') }}">Tabela</a>
         <a href="{{ url_for('terminarz') }}">Terminarz</a>
-
         {% if not session.get('user_login') %}
             <a href="{{ url_for('login') }}">Logowanie</a>
         {% endif %}
 
-        {% if session.get('rola') in ['Trener'] %}
+        {% if session.get('rola') == 'Trener' %}
             <a href="{{ url_for('trener_select') }}">Panel trenera</a>
         {% endif %}
 
@@ -41,6 +40,8 @@
 </nav>
 
 <div class="container">
+    <a class="btn" href="{{ url_for('index') }}">← Strona główna</a>
+    <br><br>
 
     <h2>Klasyfikacja strzelców</h2>
 

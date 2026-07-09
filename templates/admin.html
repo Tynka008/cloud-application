@@ -10,28 +10,27 @@
 
 <nav class="nav-main">
     <div class="nav-left">
-        <span class="logo">LIGA</span>
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="System Liga" class="nav-logo">
     </div>
 
     <div class="nav-right">
-         <a href="{{ url_for('index') }}">Start</a>
+        <a href="{{ url_for('index') }}">Start</a>
         <a href="{{ url_for('druzyny_list') }}">Drużyny</a>
         <a href="{{ url_for('zawodnicy_list') }}">Zawodnicy</a>
         <a href="{{ url_for('mecze_list') }}">Mecze</a>
         <a href="{{ url_for('strzelcy') }}">Strzelcy</a>
         <a href="{{ url_for('tabela_ligowa') }}">Tabela</a>
         <a href="{{ url_for('terminarz') }}">Terminarz</a>
-
         {% if not session.get('user_login') %}
             <a href="{{ url_for('login') }}">Logowanie</a>
         {% endif %}
 
-        {% if session.get('rola') in ['Trener'] %}
-            <a class="nav-highlight" href="{{ url_for('trener_select') }}">Panel trenera</a>
+        {% if session.get('rola') == 'Trener' %}
+            <a href="{{ url_for('trener_select') }}">Panel trenera</a>
         {% endif %}
 
         {% if session.get('rola') == 'Administrator' %}
-            <a href="{{ url_for('admin_panel') }}">Panel admina</a>
+            <a class="nav-highlight" href="{{ url_for('admin_panel') }}">Panel admina</a>
         {% endif %}
 
         {% if session.get('user_login') %}
@@ -41,6 +40,23 @@
 </nav>
 
 <div class="container">
+    <a class="btn" href="{{ url_for('index') }}">← Strona główna</a>
+    <br><br>
+
+    <h2>Panel administratora</h2>
+
+    <div class="card">
+        <h3>Zarządzanie systemem</h3>
+
+        <p>
+            <a class="btn" href="{{ url_for('admin_druzyny') }}">Drużyny</a>
+            <a class="btn" href="{{ url_for('admin_zawodnicy') }}">Zawodnicy</a>
+            <a class="btn" href="{{ url_for('admin_mecze') }}">Mecze</a>
+            <a class="btn" href="{{ url_for('admin_gole') }}">Gole</a>
+            <a class="btn" href="{{ url_for('admin_terminarze') }}">Terminarze</a>
+            <a class="btn" href="{{ url_for('admin_raport_spojnosc') }}">Raport spójności</a>
+        </p>
+    </div>
 
     <h2>Zarządzanie użytkownikami</h2>
 
@@ -58,14 +74,26 @@
             <tbody>
                 {% for user in users %}
                 <tr>
-                    <td>{{ user[0] }}</td>
+                    <td>{{ loop.index }}</td>
                     <td>{{ user[1] }}</td>
                     <td><b>{{ user[2] }}</b></td>
                     <td>
-                        <a class="btn-warning btn" href="{{ url_for('promote', uid=user[0], role='Trener') }}">Nadaj Trenera</a>
-                        <a class="btn" href="{{ url_for('promote', uid=user[0], role='Uzytkownik') }}">Użytkownik</a>
-                        <a class="btn" href="{{ url_for('promote', uid=user[0], role='Administrator') }}">Administrator</a>
+                        <a class="btn-warning btn" href="{{ url_for('promote', uid=user[0], role='Trener') }}">
+                            Nadaj Trenera
+                        </a>
+
+                        <a class="btn" href="{{ url_for('promote', uid=user[0], role='Uzytkownik') }}">
+                            Użytkownik
+                        </a>
+
+                        <a class="btn" href="{{ url_for('promote', uid=user[0], role='Administrator') }}">
+                            Administrator
+                        </a>
                     </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4">Brak użytkowników.</td>
                 </tr>
                 {% endfor %}
             </tbody>

@@ -10,24 +10,23 @@
 
 <nav class="nav-main">
     <div class="nav-left">
-        <span class="logo">LIGA</span>
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="System Liga" class="nav-logo">
     </div>
 
     <div class="nav-right">
-         <a href="{{ url_for('index') }}">Start</a>
+        <a href="{{ url_for('index') }}">Start</a>
         <a href="{{ url_for('druzyny_list') }}">Drużyny</a>
         <a href="{{ url_for('zawodnicy_list') }}">Zawodnicy</a>
         <a href="{{ url_for('mecze_list') }}">Mecze</a>
         <a href="{{ url_for('strzelcy') }}">Strzelcy</a>
         <a href="{{ url_for('tabela_ligowa') }}">Tabela</a>
         <a href="{{ url_for('terminarz') }}">Terminarz</a>
-
         {% if not session.get('user_login') %}
             <a href="{{ url_for('login') }}">Logowanie</a>
         {% endif %}
 
-        {% if session.get('rola') in ['Trener'] %}
-            <a class="nav-highlight" href="{{ url_for('trener_select') }}">Panel trenera</a>
+        {% if session.get('rola') == 'Trener' %}
+            <a href="{{ url_for('trener_select') }}">Panel trenera</a>
         {% endif %}
 
         {% if session.get('rola') == 'Administrator' %}
@@ -41,44 +40,52 @@
 </nav>
 
 <div class="container">
-
+    <a class="btn" href="{{ url_for('admin_panel') }}">← Panel admina</a>
+    <br><br>
+    
     <h2>Zarządzanie golami</h2>
 
-    <!-- FORMULARZ DODAWANIA GOLA -->
     <div class="card">
         <h3>Dodaj gola</h3>
 
         <form method="POST">
-
-            <label>Mecz:</label>
+            <label>Mecz</label>
             <select name="mecz_id" required>
                 {% for m in matches %}
-                <option value="{{ m[0] }}">
-                    {{ m[0] }} – {{ m[2] }} vs {{ m[3] }} ({{ m[1] }})
-                </option>
+                    <option value="{{ loop.index }}">
+                        {{ m[1] }} — {{ m[2] }} vs {{ m[3] }}
+                        {% if m[4] is not none and m[5] is not none %}
+                            ({{ m[4] }}:{{ m[5] }})
+                        {% endif %}
+                    </option>
                 {% endfor %}
             </select>
 
-            <label>Zawodnik:</label>
+            <label>Zawodnik</label>
             <select name="zawodnik_id" required>
                 {% for p in players %}
-                <option value="{{ p[0] }}">
-                    {{ p[1] }} {{ p[2] }} ({{ p[3] }})
-                </option>
+                    <option value="{{ p[0] }}">
+                        {{ p[1] }} {{ p[2] }} — {{ p[3] }}
+                    </option>
                 {% endfor %}
             </select>
 
-            <label>Minuta:</label>
-            <input type="number" name="minuta" required>
+            <label>Minuta</label>
+            <input type="number" name="minuta" min="1" max="120" required>
 
-            <label>Typ zdarzenia:</label>
-            <input type="text" name="typ" value="gol">
+            <label>Typ gola</label>
+            <select name="typ">
+                <option value="normalny">normalny</option>
+                <option value="karny">karny</option>
+                <option value="samobójczy">samobójczy</option>
+            </select>
 
-            <button class="btn" type="submit">Dodaj</button>
+            <br><br>
+
+            <button class="btn" type="submit">Dodaj gola</button>
         </form>
     </div>
 
-    <!-- LISTA GOLI -->
     <div class="card">
         <h3>Lista goli</h3>
 
@@ -87,10 +94,8 @@
                 <tr>
                     <th>ID</th>
                     <th>Mecz</th>
-                    <th>Data</th>
-                    <th>Gospodarz</th>
-                    <th>Gość</th>
                     <th>Zawodnik</th>
+                    <th>Drużyna gola</th>
                     <th>Minuta</th>
                     <th>Typ</th>
                     <th>Akcje</th>
@@ -98,28 +103,20 @@
             </thead>
 
             <tbody>
-                {% for g in goals %}
-                <tr>
-                    <td>{{ g[0] }}</td>
-                    <td>{{ g[1] }}</td>
-                    <td>{{ g[2] }}</td>
-                    <td>{{ g[3] }}</td>
-                    <td>{{ g[4] }}</td>
-                    <td>{{ g[5] }} {{ g[6] }}</td>
-                    <td>{{ g[7] }}</td>
-                    <td>{{ g[8] }}</td>
-                    <td>
-                        <a class="btn-danger btn" href="{{ url_for('admin_gol_delete', gol_id=g[0]) }}">
-                            Usuń
-                        </a>
-                    </td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="9">Brak zarejestrowanych goli.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
+    {% for g in goals %}
+    <tr>
+        <td>{{ g[0] }}</td>
+        <td>{{ g[2] }} vs {{ g[3] }} ({{ g[1] }})</td>
+        <td>{{ g[4] }} {{ g[5] }}</td>
+        <td>—</td>
+        <td>{{ g[6] }}</td>
+        <td>{{ g[7] }}</td>
+        <td>
+            <a class="btn-warning btn" href="{{ url_for('admin_gol_delete', gol_id=g[0]) }}">Usuń</a>
+        </td>
+    </tr>
+    {% endfor %}
+</tbody>
         </table>
     </div>
 

@@ -10,7 +10,7 @@
 
 <nav class="nav-main">
     <div class="nav-left">
-        <span class="logo">LIGA</span>
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="System Liga" class="nav-logo">
     </div>
 
     <div class="nav-right">
@@ -21,13 +21,12 @@
         <a href="{{ url_for('strzelcy') }}">Strzelcy</a>
         <a href="{{ url_for('tabela_ligowa') }}">Tabela</a>
         <a href="{{ url_for('terminarz') }}">Terminarz</a>
-
         {% if not session.get('user_login') %}
             <a href="{{ url_for('login') }}">Logowanie</a>
         {% endif %}
 
-        {% if session.get('rola') in ['Trener'] %}
-            <a class="nav-highlight" href="{{ url_for('trener_select') }}">Panel trenera</a>
+        {% if session.get('rola') == 'Trener' %}
+            <a href="{{ url_for('trener_select') }}">Panel trenera</a>
         {% endif %}
 
         {% if session.get('rola') == 'Administrator' %}
@@ -39,12 +38,12 @@
         {% endif %}
     </div>
 </nav>
-
 <div class="container">
+    <a class="btn" href="{{ url_for('admin_panel') }}">← Panel admina</a>
+    <br><br>
 
     <h2>Zarządzanie zawodnikami</h2>
 
-    <!-- FORMULARZ DODAWANIA -->
     <div class="card">
         <h3>Dodaj zawodnika</h3>
 
@@ -69,7 +68,6 @@
         </form>
     </div>
 
-    <!-- LISTA ZAWODNIKÓW -->
     <div class="card">
         <h3>Lista zawodników</h3>
 
@@ -88,7 +86,7 @@
             <tbody>
                 {% for p in players %}
                 <tr>
-                    <td>{{ p[0] }}</td>
+                    <td>{{ loop.index }}</td>
                     <td>{{ p[1] }}</td>
                     <td>{{ p[2] }}</td>
                     <td>{{ p[3] }}</td>

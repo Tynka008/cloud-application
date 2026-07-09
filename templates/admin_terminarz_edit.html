@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Edytuj drużynę – Admin</title>
+    <title>Edytuj terminarz</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
@@ -40,22 +40,36 @@
 </nav>
 
 <div class="container">
-    <a class="btn" href="{{ url_for('admin_druzyny') }}">← Zarządzanie drużynami</a>
+    <a class="btn" href="{{ url_for('admin_terminarze') }}">← Zarządzanie terminarzem</a>
     <br><br>
 
-    <h2>Edytuj drużynę</h2>
+    <h2>Edytuj terminarz</h2>
 
     <div class="card">
         <form method="POST">
+            <label>Nazwa sezonu</label>
+            <input type="text" name="nazwa_sezonu" value="{{ terminarz[1] }}" required>
 
-            <label>Nazwa:</label>
-            <input type="text" name="nazwa" value="{{ team[1] }}" required>
+            <label>Data rozpoczęcia</label>
+            <input type="date" name="data_rozpoczecia" value="{{ terminarz[2] }}" required>
 
-            <label>Miasto:</label>
-            <input type="text" name="miasto" value="{{ team[2] }}" required>
+            <label>Data zakończenia</label>
+            <input type="date" name="data_zakonczenia" value="{{ terminarz[3] }}" required>
 
-            <label>Punkty:</label>
-            <input type="number" name="punkty" value="{{ team[3] }}" required>
+            <label>Status</label>
+            <select name="status" required>
+                <option value="planowany" {% if terminarz[4] == "planowany" %}selected{% endif %}>
+                    planowany
+                </option>
+                <option value="aktywny" {% if terminarz[4] == "aktywny" %}selected{% endif %}>
+                    aktywny
+                </option>
+                <option value="zakończony" {% if terminarz[4] == "zakończony" %}selected{% endif %}>
+                    zakończony
+                </option>
+            </select>
+
+            <br><br>
 
             <button class="btn" type="submit">Zapisz zmiany</button>
         </form>
